@@ -111,9 +111,12 @@ function [theta, link, J] = MoveChainToRotor(g_des, g_s, w, q, theta, link, J, d
     end
 
     % Get current config of rotor
-    g_rot = link{end}.config;
-    while(sum(sum(abs(g_des - g_rot))) > 1e-3)
-    
+    g_rot = link{end}.config;    
+    theta_prev = zeros(size(theta));
+    % Iterate until joint angles converge
+    while(sum(sum(abs(theta_prev - theta))) > 1e-3)
+        theta_prev = theta;
+        
         if(toPlot)
             crcdDelete_v2; %han, hanbase used here
         end
@@ -210,7 +213,7 @@ end
 
 function [theta, link, J] = MoveChainToBackbone(phi, g_s, w, q, theta, link, J, kg, dt, C, ...
                                                     toPlot, plotObjs)
-% This function is Step 2 described in the paper
+% This function is Step 3 described in the paper
 %
 %   Given the current configuration of the chain, 'relax' the chain by
 %   moving each joint in the direction that reduces it's joint torque. If

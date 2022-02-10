@@ -3,7 +3,7 @@
 % Loads stl files for continuous rotation compliant device.
 % This is based on crcdLoad_v2. It loads the full chain.
 %
-mainpath = './'
+mainpath = './';
 
 % linkbase is the fixed base part
 linkbase = solpart([mainpath 'manip_base.stl']);
