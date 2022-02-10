@@ -5,13 +5,16 @@ clear
 close all
 clc
 
-toPlot = false; % Do you want to plot the kinematic chain
+%% TODO
+% Energy plots
+% Sweep number of links
+% Height of links
+% Angle of links
+
+toPlot = true; % Do you want to plot the kinematic chain
 plotObjs = {};
 
-% Scaling factor of backbone curve to fit links better
-C = .7*33/4/pi;
-
-% Angle phi that we rotate the chain through (this would be angle of the
+% Anle phi that we rotate the chain through (this would be angle of the
 % crank in our mechanism
 phis = linspace(0, 2*pi, 100);
 
@@ -40,8 +43,8 @@ theta = rand(13, 1)*0.2 - 0.1;
 if(toPlot)
     crcdDraw_v2;
     crcdSetCam;
-    crcdDelete_v2;
     zlim([0, 15]);
+    crcdDelete_v2;
 end
 
 %% Compute the configuration for each angle phi
@@ -66,7 +69,7 @@ for phiInd = 1:length(phis)
     
     %% Step 2 - Relax the chain to minimize joint angles
     % Rotor is held fixed
-    kr = 5; % representative spring constant for each joint
+    kr = 10; % representative spring constant for each joint
     dt = 0.05; %time step for integration
     if(toPlot)
         plotObjs = struct('hanbase', hanbase, 'han', {han}, 'linkbase', linkbase);
@@ -118,6 +121,7 @@ function [theta, link, J] = MoveChainToRotor(g_des, g_s, w, q, theta, link, J, d
         % Calculate desired spatial velocity of rotor using the difference
         % in frames
         V_rot = wedge( log_SE3(g_des / g_rot) );
+        
         % Convert this to joint velocities using the inverse Jacobian
         %   psuedoinverse because Jacobian is not square
         d_theta = J'/(J*J') * V_rot;
@@ -177,8 +181,8 @@ function [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
         % to a dot product if we want to specify a vector of stiffness
         % values for each joint
        
-        %d_theta_desired = -kr*theta; % joint torque
-        d_theta_desired = -0.5*kr*sign(theta).*(theta.^2); % strain energy
+        d_theta_desired = -kr*theta; % joint torque
+        %d_theta_desired = -0.5*kr*sign(theta).*(theta.^2); % strain energy
         
         % During this step we want to keep the rotor fixed, so our only
         % allowable movements can come from the null space of the Jacobian,

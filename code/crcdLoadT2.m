@@ -12,6 +12,10 @@ linkbase = solpart([mainpath 'manip_base.stl']);
 NJ = 13;
 two_chains = false; % Do you want two chains (lower and upper)
 
+% Scaling factor of backbone curve to fit links better
+C = .7*33/4/pi;
+%C = 2.8281;
+
 % g_s is a 4x4xNJ array where each (:,:,i) entry is the initial
 % configuration for link i
 g_s = zeros(4,4,NJ);
