@@ -153,9 +153,10 @@ function [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
 % This function is Step 2 described in the paper
 %
 %   Given the current configuration of the chain, 'relax' the chain by
-%   moving each joint in the direction that reduces it's joint torque. If
-%   we want to relax the chain by other metrics (such as joint strain
-%   energy), we can just change the 'd_theta_desired' equation.
+%   moving each joint in the with a desired angular velocity. In the paper,
+%   this velocity is one that is opposite of the joint torque. The current
+%   implementation in this code is the direction that most minimizes the
+%   total strain energy.
 %
 %   The rotor frame is fixed in this step because this desired joint
 %   velocity vector is projected onto the null space of the Jacobian. In
@@ -192,7 +193,7 @@ function [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
         % values for each joint
        
         %d_theta_desired = -kr.*theta; % joint torque
-        d_theta_desired = -1*1500*CalculateDeDtheta(theta, kr); % velocities are in the 
+        d_theta_desired = -1*CalculateDeDtheta(theta, kr); % velocities are in the 
         % direction of minimizing total strain energy and scaled
         
         % During this step we want to keep the rotor fixed, so our only
@@ -300,7 +301,7 @@ function dE = CalculateDeDtheta(theta, kr)
         theta_down(ind) = theta_down(ind) - del_theta;
         E_down = sum(0.5*(kr.*(theta_down.^2)));
         
-        dE(ind) = (E_up - E_down)/2*del_theta;
+        dE(ind) = (E_up - E_down)/(2*del_theta);
     end
 end
 
@@ -328,7 +329,7 @@ function dP = CalculateDpDtheta(phi, g_s, w, q, theta, link, C)
         [~, link_down] = crcdUpdateKin_v2(g_s, w, q, theta_down, link);
         P_down = CalculatePotentialFunc(phi, link_down, C);
 
-        dP(ind) = (P_up - P_down)/2*del_theta;
+        dP(ind) = (P_up - P_down)/(2*del_theta);
     end
 end
 

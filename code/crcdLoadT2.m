@@ -11,7 +11,7 @@ han = {};
 linkbase = solpart([mainpath 'manip_base.stl']);
 
 % NJ is the number of joints in the half chain (ground to rotor)
-NJ = 15;
+NJ = 13;
 two_chains = false; % Do you want two chains (lower and upper)
 
 % Scaling factor of backbone curve to fit links better
