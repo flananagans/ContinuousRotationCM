@@ -23,12 +23,13 @@ crcdLoadT2;
 %load optimizedbtvec.mat
 %load('generatedTraj.mat');
 %load('generatedTraj_nomovetochain.mat');
-load('generatedTraj_strainenergy.mat');
+load(sprintf('generatedTraj_strainenergy%d.mat', NJ));
 
 [btrows,btcols] = size(btvec);
 
 %% Draw chain for each phi of btvec
 for jj = 1:btcols
+    crcdDelete_v2;
     theta = [btvec(:,jj) ; -btvec(end:-1:1,jj)];
     [J, link] = crcdUpdateKin_v2(g_s, w, q, theta, link);    
     crcdDraw_v2;
@@ -40,12 +41,11 @@ for jj = 1:btcols
     % getframe is not supported in GNU Octave. 
 	% uncomment line below if you are running Matlab
     movv(jj) = getframe(gcf);
-    crcdDelete_v2;
 end
 
 %% Plot joint angles
-set1 = btvec([1 3 5 7 9 11 13],:)';
-set2 = btvec([2 4 6 8 10 12],:)';
+set1 = btvec(1:2:NJ,:)';
+set2 = btvec(2:2:NJ,:)';
 phivec = linspace(0,(btcols-1)/btcols*2*pi,btcols);
 
 figure
@@ -53,7 +53,7 @@ subplot(1,2,1)
 %plot(phivec,360/2/pi*set1)
 plot(phivec,set1)
 hold on
-legend('1', '3', '5', '7', '9', '11', '13')
+legend(compose('%d', 1:2:NJ));
 xlabel('\phi (radians)')
 ylabel('\theta_i (radians)');
 title('odd numbered joint angles');
@@ -67,7 +67,7 @@ ax.LineWidth = 1;
 subplot(1,2,2)
 %plot(phivec, 360/2/pi*set2)
 plot(phivec, set2)
-legend('2', '4', '6', '8', '10', '12')
+legend(compose('%d', 2:2:NJ));
 xlabel('\phi (radians)')
 ylabel('\theta_i (radians)');
 title('even numbered joint angles');

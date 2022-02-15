@@ -32,7 +32,7 @@ crcdLoadT2;
 % We can't initialize them to zero because this makes the Jacobian singular
 %   so we set each joint theta to a small nonzero number
 rng('default') %reset random number generator so it's the same every time
-theta = rand(13, 1)*0.2 - 0.1;
+theta = rand(length(link), 1)*0.2 - 0.1;
 
 %% Get the initial configuration -- produces the Jacobian (J) and link objects
 % with the frame in link{i}.config
@@ -91,7 +91,7 @@ for phiInd = 1:length(phis)
 end
 
 % Save the trajectory to a file
-save('generatedTraj_strainenergy.mat', 'btvec');
+save(sprintf('generatedTraj_strainenergy%d.mat', NJ), 'btvec');
 
 function [theta, link, J] = MoveChainToRotor(g_des, g_s, w, q, theta, link, J, dt, toPlot, plotObjs)
 % This function is Step 1 described in the paper

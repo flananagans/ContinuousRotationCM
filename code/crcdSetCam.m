@@ -9,5 +9,5 @@ view(3)
 xlabel('x')
 ylabel('y')
 zlabel('z')
-axis(2*[-2 2 -2 2 0 4])
+axis(2*ceil(NJ/13)*[-2 2 -2 2 0 4])
 grid on

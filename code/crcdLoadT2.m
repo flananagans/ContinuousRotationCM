@@ -6,15 +6,17 @@
 mainpath = './';
 
 % linkbase is the fixed base part
+hanbase = [];
+han = {};
 linkbase = solpart([mainpath 'manip_base.stl']);
 
 % NJ is the number of joints in the half chain (ground to rotor)
-NJ = 13;
+NJ = 15;
 two_chains = false; % Do you want two chains (lower and upper)
 
 % Scaling factor of backbone curve to fit links better
 C = .7*33/4/pi;
-%C = 2.8281;
+C = (NJ/13)*C;
 
 % g_s is a 4x4xNJ array where each (:,:,i) entry is the initial
 % configuration for link i
