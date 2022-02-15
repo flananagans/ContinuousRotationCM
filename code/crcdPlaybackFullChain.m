@@ -21,9 +21,9 @@ crcdLoadT2;
  
 %% Load joint trajectories
 %load optimizedbtvec.mat
-load('generatedTraj.mat');
+%load('generatedTraj.mat');
 %load('generatedTraj_nomovetochain.mat');
-%load('generatedTraj_strainenergy.mat');
+load('generatedTraj_strainenergy.mat');
 
 [btrows,btcols] = size(btvec);
 

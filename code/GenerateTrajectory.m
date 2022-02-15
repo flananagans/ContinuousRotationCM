@@ -11,7 +11,7 @@ clc
 % Height of links
 % Angle of links
 
-toPlot = true; % Do you want to plot the kinematic chain
+toPlot = false; % Do you want to plot the kinematic chain
 plotObjs = {};
 
 % Anle phi that we rotate the chain through (this would be angle of the
@@ -69,14 +69,14 @@ for phiInd = 1:length(phis)
     
     %% Step 2 - Relax the chain to minimize joint angles
     % Rotor is held fixed
-    kr = 10; % representative spring constant for each joint
+    kr = 15 + zeros(size(theta)); % representative spring constant for each joint
     dt = 0.05; %time step for integration
     if(toPlot)
         plotObjs = struct('hanbase', hanbase, 'han', {han}, 'linkbase', linkbase);
     end
     [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
                                             toPlot, plotObjs);
-    
+                                        
     %% Step 3 - Move the chain as close as possible to the backbone curve
     % Rotor is held fixed
     kg = 15; % representative spring constant
@@ -170,9 +170,16 @@ function [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
        linkbase = plotObjs.linkbase;
     end
     
+    % kr should be joint stiffnessness, if only one number is given, set
+    % all stiffnessess equal
+    if(numel(kr) == 1)
+        kr = kr + zeros(size(theta));
+    end
+    
     theta_prev = zeros(size(theta));
     % Iterate until joint angles converge
-    while(sum(sum(abs(theta_prev - theta))) > 1e-3)
+    d_theta = ones(size(theta));
+    while(sum(abs(d_theta)) > 1e-3)
         theta_prev = theta;
                 
         if(toPlot)
@@ -184,14 +191,15 @@ function [theta, link, J] = RelaxChain(g_s, w, q, theta, link, J, kr, dt, ...
         % to a dot product if we want to specify a vector of stiffness
         % values for each joint
        
-        d_theta_desired = -kr*theta; % joint torque
-        %d_theta_desired = -0.5*kr*sign(theta).*(theta.^2); % strain energy
+        %d_theta_desired = -kr.*theta; % joint torque
+        d_theta_desired = -1*1500*CalculateDeDtheta(theta, kr); % velocities are in the 
+        % direction of minimizing total strain energy and scaled
         
         % During this step we want to keep the rotor fixed, so our only
         % allowable movements can come from the null space of the Jacobian,
         % because these are joint movements along axes that do not change
         % the output position or orientation of the rotor
-        A = null(J); 
+        A = null(J);
         d_theta = A*A'*d_theta_desired;
         
         % Integrate d_theta to get new angles
@@ -247,14 +255,14 @@ function [theta, link, J] = MoveChainToBackbone(phi, g_s, w, q, theta, link, J, 
         dP = CalculateDpDtheta(phi, g_s, w, q, theta, link, C);
         
         % Update 'joint stress'
-        d_theta = -kg*dP;
+        d_theta_desired = -kg*dP;
         
         % During this step we want to keep the rotor fixed, so our only
         % allowable movements can come from the null space of the Jacobian,
         % because these are joint movements along axes that do not change
         % the output position or orientation of the rotor
         A = null(J); 
-        d_theta = A*A'*d_theta;
+        d_theta = A*A'*d_theta_desired;
         
         % Integrate d_theta to get new angles
         theta = theta + d_theta*dt;
@@ -273,6 +281,29 @@ function [theta, link, J] = MoveChainToBackbone(phi, g_s, w, q, theta, link, J, 
     end
 end
     
+function dE = CalculateDeDtheta(theta, kr)
+% Dunction to calculate the partial derivative of the total strain energy
+% with respect to each theta. The central difference approximation is used
+
+    % Estimate dE/dtheta (derivative of total strain energy wrt each
+    % joint angle using central difference
+    dE = zeros(size(theta));
+    del_theta = 0.01; % Difference in theta used to estimate derivative
+    for ind = 1:length(theta)
+        % theta + del_theta
+        theta_up = theta;
+        theta_up(ind) = theta_up(ind) + del_theta;
+        E_up = sum(0.5*(kr.*(theta_up.^2)));
+        
+        % theta - del_theta
+        theta_down = theta;
+        theta_down(ind) = theta_down(ind) - del_theta;
+        E_down = sum(0.5*(kr.*(theta_down.^2)));
+        
+        dE(ind) = (E_up - E_down)/2*del_theta;
+    end
+end
+
 function dP = CalculateDpDtheta(phi, g_s, w, q, theta, link, C)
 % Function to calculate the partial derivative of the potential cost
 % function P with respect to each theta. The central difference
