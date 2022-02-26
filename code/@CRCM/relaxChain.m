@@ -2,9 +2,9 @@ function relaxChain(obj)
 % This function is Step 2 described in the paper
 %
 %   Given the current configuration of the chain, 'relax' the chain by
-%   moving each joint in the with a desired angular velocity. In the paper,
+%   moving each joint in with a desired angular velocity. In the paper,
 %   this velocity is one that is opposite of the joint torque. The current
-%   implementation in this code is the direction that most minimizes the
+%   implementation in this code is the direction that minimizes the
 %   total strain energy.
 %
 %   The rotor frame is fixed in this step because this desired joint
@@ -18,14 +18,9 @@ function relaxChain(obj)
     d_theta = ones(size(obj.theta));
     while(sum(abs(d_theta)) > 1e-3)
 
-        % Calculated desired joint velocities that will reduce joint torque
-        % Currently all joints have same stiffness but this can be changed
-        % to a dot product if we want to specify a vector of stiffness
-        % values for each joint
-
-        %d_theta_desired = -kr.*theta; % joint torque
-        d_theta_desired = -1*obj.calculateDeDtheta(); % velocities are in the 
-        % direction of minimizing total strain energy
+        % Calculated desired joint velocities in the direction 
+        % of minimizing total strain energy (gradient descent)
+        d_theta_desired = -1*obj.calculateDeDtheta();
 
         % During this step we want to keep the rotor fixed, so our only
         % allowable movements can come from the null space of the Jacobian,

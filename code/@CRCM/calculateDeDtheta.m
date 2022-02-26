@@ -19,6 +19,7 @@ function dE = calculateDeDtheta(obj)
         theta_down(ind) = theta_down(ind) - del_theta;
         E_down = obj.calculateStrainEnergy(theta_down);
 
+        % central difference approximation of the gradient
         dE(ind) = (E_up - E_down)/(2*del_theta);
     end
 end

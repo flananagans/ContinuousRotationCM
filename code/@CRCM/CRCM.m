@@ -1,6 +1,8 @@
 classdef CRCM < matlab.mixin.Copyable
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+%CRCM Continuous Rotating Compliant Mechanism
+%   This class contructs the mechanism chain and allows the user to update
+%   kinematics for set joint angles or generate trajectories for desired
+%   crank angles 'phi'. 
     
     properties
         % Chain parameters

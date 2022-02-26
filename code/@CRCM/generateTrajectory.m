@@ -12,7 +12,7 @@ function [traj, strain_energy] = generateTrajectory(obj, phis)
         phi = phis(phiInd);
         fprintf('Phi = %0.2f\n', phi);
 
-        % Desired configuration of the rotor for this phi
+        % Desired configuration frame transformation of the rotor for this phi
         g_des = [-cos(2*phi), -sin(2*phi),  0,   0;
                  -sin(2*phi),  cos(2*phi),  0,   0;
                            0,           0, -1, 2*obj.C;

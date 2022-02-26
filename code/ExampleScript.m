@@ -5,7 +5,7 @@ clc
 
 %% Create chain object with default parameters
 c = CRCM();
-c.toPlot = false; % whether or not to plot the chain
+c.toPlot = false; % whether or not to plot the chain during kinematic updates
 
 % store the chain parameters for later
 N = c.N;

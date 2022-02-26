@@ -23,6 +23,7 @@ function dP = calculateDpDtheta(obj, phi)
         cp.updateTheta(theta_down);
         P_down = calculatePotentialFunc(cp, phi);
 
+        % central difference approximation of the gradient
         dP(ind) = (P_up - P_down)/(2*del_theta);
     end
 end
