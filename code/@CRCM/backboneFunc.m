@@ -1,8 +1,8 @@
-function [r, Rotation, EA, EB, T, N, B] = crcdBackFunc(phi,s,wr,scale)
-%CRCDBACKFUNC Creates backbone curve for a 
-% Continuous Rotation Compliant Device.
+function [r, Rotation, EA, EB, T, N, B] = backboneFunc(obj, phi,s,wr)
+%backboneFunc Creates backbone curve for a 
+% Continuous Rotation Compliant Mechanism. Written by Matt Moses
 %
-% [r, Rotation, EA, EB, T, N, B] = crcdBackFunc(phi,s,wr,scale)
+% [r, Rotation, EA, EB, T, N, B] = crcmBackFunc(phi,s,wr,obj.C)
 % phi is the angle of the moving platform and s is
 %  a normalized length along the backbone.
 %
@@ -14,8 +14,8 @@ function [r, Rotation, EA, EB, T, N, B] = crcdBackFunc(phi,s,wr,scale)
 % EA and EB are 3x1 vectors from point at r to the sides of the ribbon.
 %
 % wr is the half-width of the ribbon.
-% scale controls the size of the backbone curve.
-% The total length of the curve is scale*4*pi.
+% obj.C controls the size of the backbone curve.
+% The total length of the curve is obj.C*4*pi.
 %
 % T, N, and B are the tangent, normal, and bi-normal vectors to
 %  the backbone curve, respectively.
@@ -97,9 +97,9 @@ if (s > 7/8)
     alpha = phi + pi;
 end
 
-x = scale*x;
-y = scale*y;
-z = scale*z;
+x = obj.C*x;
+y = obj.C*y;
+z = obj.C*z;
 
 % find coordinates of points along each edge of the virtual ribbon
 % wr = 1; % half-width of ribbon

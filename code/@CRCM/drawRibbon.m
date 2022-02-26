@@ -1,10 +1,10 @@
-function crcdDrawRibbon(phi, scalefac, wr)
-%CRCDDRAWRIBBON
-% crcdDrawRibbon(phi, scalefac, wr)
+function drawRibbon(obj, phi, rib_width)
+%DRAWRIBBON
+% drawRibbon(obj, phi, rib_width). Written by Matt Moses
 %
-% Draws the crcd ribbon.
+% Draws the CRCM ribbon.
+% obj is the CRCM object
 % phi is angle to backbone curve plane
-% scalefac is overall scale
 % wr is relative width of ribbon
 
 n = 64;
@@ -15,7 +15,7 @@ drawBB = 1;
 
 for i = 1:n
     % get the points and frames
-    [r, R, EA, EB, T, N, B] = crcdBackFunc(phi,s(i),wr,scalefac);
+    [r, R, EA, EB, T, N, B] = obj.backboneFunc(phi,s(i),rib_width);
     
     % Now do some cumbersome unpacking of variables. I know there is a
     % better way to do this, but this is just how I did it, ok?
@@ -69,7 +69,7 @@ end
 
 % this "dithers" the two copies of the backbone so you can see it
 % over the patches
-dit = .01*scalefac;
+dit = .01*obj.C;
 if drawBB == 1
     hold on
     backboneLine1 = plot3(x+dit,y-dit,z-dit,'k');

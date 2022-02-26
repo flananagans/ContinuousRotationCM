@@ -6,12 +6,13 @@ function g = twist2g(v,w,theta)
 % the tangent space se(3).
 % v and w must be three element column vectors, theta must be scalar
 
-if (w == [0 0 0]')
-    % prismatic joint
-    g = [eye(3) theta*v; 0 0 0 1];
-else
-    % revolute joint
-    R = eye(3) + hat(w)*sin(theta) + hat(w)^2*(1-cos(theta));
-    p = (eye(3) - R)*(hat(w)*v) + w * w' * v * theta;
-    g = [R p; 0 0 0 1];
+    if (w == [0 0 0]')
+        % prismatic joint
+        g = [eye(3) theta*v; 0 0 0 1];
+    else
+        % revolute joint
+        R = eye(3) + CRCM.hat(w)*sin(theta) + CRCM.hat(w)^2*(1-cos(theta));
+        p = (eye(3) - R)*(CRCM.hat(w)*v) + w * w' * v * theta;
+        g = [R p; 0 0 0 1];
+    end
 end

@@ -4,48 +4,37 @@ clear
 close all
 clc
 
-% This script loads the files and sets up the kinematics
-% This gives us:
-%   g_s - the initial frames for each link (all joint angles theta = 0)
-%   w - the axis of rotation for each link
-%   q - a point on the axis of rotation for each link
-crcdLoadT2;
 
-% theta = zeros(NJ,1);
-% crcdUpdateKin_v2;
-% crcdDraw_v2;
-% crcdSetCam;
-
-% comment this line out if you are running Matlab instead of GNU Octave:
-%more off
- 
 %% Load joint trajectories
-%load optimizedbtvec.mat
-%load('generatedTraj.mat');
-%load('generatedTraj_nomovetochain.mat');
-load(sprintf('generatedTraj_strainenergy%d.mat', NJ));
+%load('optimizedbtvec.mat')
+load(sprintf('generatedTraj_strainenergy%d.mat', c.N));
 
-[btrows,btcols] = size(btvec);
+%% Create chain object
+try
+    c = CRCM(N, C, alpha, k); % chain parameters may be loaded with trajectory
+catch
+    c = CRCM();
+end
+c.toPlot = true; % whether or not to plot the chain
+
 
 %% Draw chain for each phi of btvec
+[btrows,btcols] = size(btvec);
 for jj = 1:btcols
-    crcdDelete_v2;
-    theta = [btvec(:,jj) ; -btvec(end:-1:1,jj)];
-    [J, link] = crcdUpdateKin_v2(g_s, w, q, theta, link);    
-    crcdDraw_v2;
-	drawnow;
+    
+    theta = btvec(:,jj) ;
+    c.updateTheta(theta);
     if (jj == 1)
-        crcdSetCam;
+        c.camSet = true;
     end
-    %link{13}.config
     % getframe is not supported in GNU Octave. 
 	% uncomment line below if you are running Matlab
     movv(jj) = getframe(gcf);
 end
 
 %% Plot joint angles
-set1 = btvec(1:2:NJ,:)';
-set2 = btvec(2:2:NJ,:)';
+set1 = btvec(1:2:c.N,:)';
+set2 = btvec(2:2:c.N,:)';
 phivec = linspace(0,(btcols-1)/btcols*2*pi,btcols);
 
 figure
@@ -53,7 +42,7 @@ subplot(1,2,1)
 %plot(phivec,360/2/pi*set1)
 plot(phivec,set1)
 hold on
-legend(compose('%d', 1:2:NJ));
+legend(compose('%d', 1:2:c.N));
 xlabel('\phi (radians)')
 ylabel('\theta_i (radians)');
 title('odd numbered joint angles');
@@ -67,7 +56,7 @@ ax.LineWidth = 1;
 subplot(1,2,2)
 %plot(phivec, 360/2/pi*set2)
 plot(phivec, set2)
-legend(compose('%d', 2:2:NJ));
+legend(compose('%d', 2:2:c.N));
 xlabel('\phi (radians)')
 ylabel('\theta_i (radians)');
 title('even numbered joint angles');
