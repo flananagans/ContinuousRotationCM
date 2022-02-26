@@ -1,16 +1,25 @@
 # ContinuousRotationCM
-Github repository for the code used for the kinematics and analysis of a continuous rotation compliant mechanism
+Github repository for the code used for the kinematics and analysis of a continuous rotation compliant mechanism (CRCM)
 
-The important scripts that are new are *GenerateTrajectory.m* and *crcdPlaybackFullChain.m*. 
-In *GenerateTrajectory.m*, the chain configuration for each crank angle phi is created over 3 steps:
+The code is built around the CRCM object. Look into *ExampleScript.m*, *PlaybackFullChain.m* and *SweepExample.m* for usage. In short, most interactions with the CRCM object are through these methods:
 
-1. Current rotor frame is moved onto the desired rotor frame
-2. Chain is 'relaxed' based on cost at each joint. In the paper, the cost at each joint is set as the joint torque where all joints have the same stiffness (`kr` variable). Currently in the code, the joints are iteratively moved in the direction that most minimizes the total strain energy until it cannot move anymore without changing the rotor frame.
-3. ~Chain is moved as close to the backbone curve as possible. This is basically the same as step 2 but the cost at each joint is based on how moving that joint will reduce the summed euclidean distances from each joint origin to the chain.~ We have stopped using this step
+* `c = CRCM()` creates the chain object and constructs the link transformations for each joint. A constructor for non-default chain parameters is also provided.
+* `c.updateTheta(theta)` updates the chain kinematics given a (`c.N` x 1) vector of joint angles.
+* `c.generateTrajectory(phis)` generates joint angle trajectories that cause the rotor to follow the given crank angle `phi`
 
-Running this entire script will output the joint angles produced for each phi angle. This is saved to a .mat file that can be loaded into the *crcdPlaybackFullChain.m* script and visualized
+# Example Overviews
 
-If you would like to try different numbers of joints, change the `NJ` variable in *crcdLoadT2.m* to your desired number of joints (should be odd). The height of the rotor is scaled linearly based on the numbers chosen in the paper.
+1. *ExampleScript.m*: Running this script will generate a chain trajectory for one full turn of the crank for a default chain. The trajectory and chain information is saved in a *.mat* file that can be loaded into *PlaybackFullChain.m* for visualization
+2. *SweepExample.m*: Running this script will perform a sweep through different combinations of chain parameters. For each combination, the trajectory for a full crank revolution is computed and saved (along with the strain energy at each `phi`) is generated and saved in a *.mat* file.
+
+If you would like to try different parameters for the chain, you must do this through the constructor. Changing the object's properties does not reconstruct the chain links.
+
+# Trajectory Generation
+In `c.generateTrajectory(phis)`, the chain configuration for each crank angle `phi` in `phis` is created over 3 steps:
+
+1. Current rotor frame is moved onto the desired rotor frame (`c.moveChainToRotor`)
+2. Chain is 'relaxed' based on cost at each joint (`c.relaxChain`). In Matt Moses' paper, the cost at each joint is the joint torque (stiffness * theta). In this work, the joints are iteratively moved in the direction that minimizes the total strain energy using gradient descent. The movements in this step are restricted to only those that do not change the rotor configuration (i.e. joint velocities are in the nullspace of the Jacobian).
+3. In Matt Moses' work, the chain is moved as close to the desired backbone curve as possible (`c.moveChainToBackbone`). This is basically the same as step 2 but the cost at each joint is based on how moving that joint will reduce the summed euclidean distances from each joint origin to the chain. This is not used in this work.
 
 # Prior work
 This work is a follow-up to a previous conference paper by Matt Moses:
