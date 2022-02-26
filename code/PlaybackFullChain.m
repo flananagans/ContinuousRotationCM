@@ -3,11 +3,11 @@
 clear
 close all
 clc
-
-
+    
 %% Load joint trajectories
-%load('optimizedbtvec.mat')
-load(sprintf('generatedTraj_strainenergy%d.mat', c.N));
+load('optimizedbtvec.mat')
+%load('generatedTraj_strainenergy13.mat');
+%load('generatedTraj_sweep1.mat')
 
 %% Create chain object
 try

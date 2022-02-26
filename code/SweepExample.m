@@ -24,7 +24,7 @@ parfor iter = 1:length(allparams(1, :))
     %% Initialize chain joint angles
     % We can't initialize them to zero because this makes the Jacobian singular
     %   so we use an initial condition
-    theta_init = [-0.71, 0, -0.13, 0, 0.42, 1, 0, 1.32, 0, 0.9, 0, 0.3]';
+    theta_init = [0.55, 0, 0.54, 0, -0.51, 0, -1, 0, -1, 0, -1, 0, -0.54]';
     theta = zeros(c.N, 1);
     if(length(theta_init) > c.N)
        theta = theta_init(1:c.N);
