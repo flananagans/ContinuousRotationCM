@@ -12,7 +12,7 @@ The code is built around the CRCM object. Look into *ExampleScript.m*, *Playback
 1. *ExampleScript.m*: Running this script will generate a chain trajectory for one full turn of the crank for a default chain. The trajectory and chain information is saved in a *.mat* file that can be loaded into *PlaybackFullChain.m* for visualization
 2. *SweepExample.m*: Running this script will perform a sweep through different combinations of chain parameters. For each combination, the trajectory for a full crank revolution is computed and saved (along with the strain energy at each `phi`) is generated and saved in a *.mat* file.
 
-# Support Chain Parameters
+# Supported Chain Parameters
 Various chain parameters can be modified:
 * `N`: Number of links in the chain (ground to rotor, this is a *half chain* in Matt Moses' work)
 * `C`: 1/2 the distance from the ground to the rotor. Because the link sizes are fixed, changing this effectively changes the ratio of link height (joint to joint length) to the height of the rotor.
